@@ -1,18 +1,8 @@
+# -*- coding: utf-8 -*-
 from pprint import pprint
 from random import uniform, random, randint
 from math import cos, ceil
-from scipy.interpolate import interp1d
-
-
-## GLOBAIS
-tam_populacao = 0
-tam_cromossomo = 0
-Li_standard = 0
-Ui_standard = 0
-Li_luxo = 0
-Ui_luxo = 0
-L = 0
-
+#from scipy.interpolate import interp1d
 
 def leitura():
     global tam_populacao, tam_cromossomo, Li_standard, Ui_standard, Li_luxo, Ui_luxo, L
@@ -30,30 +20,21 @@ def leitura():
     Ui_luxo = (int)((linhas[3].split("=")[1]).split(",")[1].split("]")[0])
     L = tam_cromossomo
 
-
-def lista_string(lista):
-    string = ''
-    for i in lista:
-        string+=str(i)
-    return string
-
 def mapeia_d_x_standard(d):
-    return ceil(Li_standard + ((Ui_standard - Li_standard)/(pow(2,L/2)-1))*d)
+    return round(Li_standard + float(Ui_standard - Li_standard)/float(pow(2,L/2)-1)*d)
 
 def mapeia_d_x_luxo(d):
-    return ceil(Li_luxo + ((Ui_luxo - Li_luxo)/(pow(2,L/2)-1))*d)
+    return round(Li_luxo + float(Ui_luxo - Li_luxo)/float(pow(2,L/2)-1)*d)
+
+def lista_string(l):
+    return ''.join(map(str, l))
 
 def converte_bin_dec(lista_bin):
-    bin_standard = ''
-    bin_luxo = ''
-    for i in lista_bin[:5]:
-        bin_standard+=str(i)
-    for i in lista_bin[5:]:
-        bin_luxo+=str(i)
+    bin_standard = lista_string(lista_bin[:5])
+    bin_luxo = lista_string(lista_bin[5:])
     dec_standard = int(bin_standard,2)
     dec_luxo = int(bin_luxo,2)
     return (dec_standard,dec_luxo)
-    
 
 def populacao_inicial():
     populacao = []
@@ -65,16 +46,15 @@ def populacao_inicial():
     return populacao
         
 def penalidade(total_funcionarios):
-    return abs(40-total_funcionarios)/100
+    return max(0, total_funcionarios - 40)/16
 
 def fitness(individuo):
     decimal = converte_bin_dec(individuo)
     x_standard = mapeia_d_x_standard(decimal[0])
     x_luxo = mapeia_d_x_luxo(decimal[1])
-    return ((x_standard*30 + x_luxo*40)/1360) - penalidade(x_standard+(x_luxo*2))
+    return (x_standard*30 + x_luxo*40)/1360 - 1 * penalidade(x_standard+x_luxo*2)
 
-def main():
-
+if __name__ == "__main__":
     leitura()
     populacao = populacao_inicial()
 
@@ -82,35 +62,31 @@ def main():
     (minimo, maximo) = (populacao[0], populacao[-1])
 
     print('População:')
-    pprint(populacao)
-    print('\nMinimização:')
-    print('Indivíduo:')
+    pprint([lista_string(x) for x in populacao])
+    
+    print('Pior indivíduo:')
     print('-> Binário: ' + str(lista_string(minimo)))
 
     print('-> Decimal:')
-    print('--Standard: ' + str(converte_bin_dec(lista_string(minimo))[0]))
-    print('--Luxo: ' + str(converte_bin_dec(lista_string(minimo))[1]))
+    print('--Standard: ' + str(converte_bin_dec(minimo)[0]) )
+    print('--Luxo: ' + str(converte_bin_dec(minimo)[1]) )
 
     print('-> X:')
     print('--Standard: ' + str(mapeia_d_x_standard(converte_bin_dec(lista_string(minimo))[0])))
     print('--Luxo: ' + str(mapeia_d_x_luxo(converte_bin_dec(lista_string(minimo))[1])))
 
-    print('Fitness: ' + str(fitness(minimo))) 
+    print('Fitness: ' + str(fitness(minimo)))
 
 
-    print('\nMaximização:')
-    print('Indivíduo:')
+    print('Melhor indivíduo:')
     print('-> Binário: ' + str(lista_string(maximo)))
 
     print('-> Decimal:')
-    print('-- Standard: ' + str(converte_bin_dec(lista_string(maximo))[0]))
-    print('-- Luxo: ' + str(converte_bin_dec(lista_string(maximo))[1]))
+    print('--Standard: ' + str(converte_bin_dec(maximo)[0]) )
+    print('--Luxo: ' + str(converte_bin_dec(maximo)[1]) )
 
     print('-> X:')
     print('-- Standard: ' + str(mapeia_d_x_standard(converte_bin_dec(lista_string(maximo))[0])))
     print('-- Luxo: ' + str(mapeia_d_x_luxo(converte_bin_dec(lista_string(maximo))[1])))
 
-    print('Fitness: ' + str(fitness(maximo))) 
-
-if __name__ == "__main__":
-    main()
+    print('Fitness: ' + str(fitness(maximo)))
