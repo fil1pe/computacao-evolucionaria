@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from pprint import pprint
 from random import uniform, random, randint
-from math import cos, ceil
-#from scipy.interpolate import interp1d
 
 def leitura():
     global tam_populacao, tam_cromossomo, Li_standard, Ui_standard, Li_luxo, Ui_luxo, L
@@ -18,13 +16,13 @@ def leitura():
     Ui_standard = (int)((linhas[2].split("=")[1]).split(",")[1].split("]")[0])
     Li_luxo = (int)((linhas[3].split("=")[1]).split(",")[0].split("[")[1])
     Ui_luxo = (int)((linhas[3].split("=")[1]).split(",")[1].split("]")[0])
-    L = tam_cromossomo
+    L = tam_cromossomo/2
 
 def mapeia_d_x_standard(d):
-    return round(Li_standard + float(Ui_standard - Li_standard)/float(pow(2,L/2)-1)*d)
+    return round(Li_standard + float(Ui_standard - Li_standard)/float(2**L - 1)*d)
 
 def mapeia_d_x_luxo(d):
-    return round(Li_luxo + float(Ui_luxo - Li_luxo)/float(pow(2,L/2)-1)*d)
+    return round(Li_luxo + float(Ui_luxo - Li_luxo)/float(2**L - 1)*d)
 
 def lista_string(l):
     return ''.join(map(str, l))
